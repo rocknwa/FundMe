@@ -9,7 +9,7 @@ import {StdCheats} from "forge-std/StdCheats.sol";
 
 /// @title  Unit Tests for ChainFund Contract
 /// @notice Deploys ChainFund, validates funding logic and withdrawals in various scenarios
-/// @dev    Uses Forge’s StdCheats for account control and Test for assertions
+/// @dev   Uses Forge’s StdCheats for account control and Test for assertions
 contract ChainFundTest is StdCheats, Test {
     ChainFund public chainFund;
     HelperConfig public helperConfig;
