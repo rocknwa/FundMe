@@ -1,25 +1,43 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import {AggregatorV3Interface} 
+    from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
-// Why is this a library and not abstract?
-// Why not an interface?
+/// @title  PriceConverter
+/// @notice Library to fetch ETH/USD price and convert ETH amounts to USD using Chainlink
+/// @dev    All functions are internal & view; using a library avoids deployment and allows inlining
 library PriceConverter {
-    // We could make this public, but then we'd have to deploy it
-    function getPrice(AggregatorV3Interface priceFeed) internal view returns (uint256) {
-        // Sepolia ETH / USD Address
-        // https://docs.chain.link/data-feeds/price-feeds/addresses
-        (, int256 answer,,,) = priceFeed.latestRoundData();
-        // ETH/USD rate in 18 digit
-        return uint256(answer * 10000000000);
+    /// @notice Retrieves the latest ETH/USD price from a Chainlink Aggregator
+    /// @param priceFeed The Chainlink price feed contract interface
+    /// @return price ETH/USD price scaled to 18 decimals
+    function getPrice(AggregatorV3Interface priceFeed) 
+        internal 
+        view 
+        returns (uint256 price) 
+    {
+        // latestRoundData returns: roundId, answer, startedAt, updatedAt, answeredInRound
+        (, int256 answer, , , ) = priceFeed.latestRoundData();
+        // Chainlink's answer has 8 decimals; scale to 18 for uniformity
+        return uint256(answer * 1e10);
     }
 
-    // 1000000000
-    function getConversionRate(uint256 ethAmount, AggregatorV3Interface priceFeed) internal view returns (uint256) {
+    /// @notice Converts a given ETH amount to its USD equivalent
+    /// @param ethAmount Amount of ETH in wei
+    /// @param priceFeed The Chainlink price feed contract interface
+    /// @return ethAmountInUsd USD value of the ETH amount, scaled to 18 decimals
+    function getConversionRate(
+        uint256 ethAmount,
+        AggregatorV3Interface priceFeed
+    ) 
+        internal 
+        view 
+        returns (uint256 ethAmountInUsd) 
+    {
+        // Fetch ETH/USD price (18 decimals)
         uint256 ethPrice = getPrice(priceFeed);
-        uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1000000000000000000;
-        // the actual ETH/USD conversion rate, after adjusting the extra 0s.
-        return ethAmountInUsd;
+        // Multiply by amount and normalize by 1e18 (wei factor)
+        ethAmountInUsd = (ethPrice * ethAmount) / 1e18;
     }
 }
+
