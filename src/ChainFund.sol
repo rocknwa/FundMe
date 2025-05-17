@@ -7,7 +7,7 @@ import {PriceConverter} from "./PriceConverter.sol";
 /// @title  ChainFund
 /// @author Therock Ani
 /// @notice This contract allows users to fund it in ETH, enforcing a minimum USD amount via Chainlink price feeds.
-/// @dev    Utilizes a library for conversion rates, a custom error for owner checks, and optimal gas patterns.
+/// @dev  Utilizes a library for conversion rates, a custom error for owner checks, and optimal gas patterns.
 error ChainFund_NotOwner();
 
 contract ChainFund {
