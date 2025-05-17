@@ -7,7 +7,7 @@ import {ChainFund} from "../src/ChainFund.sol";
 
 /// @title  DeployChainFund Script
 /// @notice Automates the deployment of the ChainFund contract using network-specific configuration
-/// @dev    Uses Forge’s Script for transaction broadcasting and HelperConfig for price-feed addresses
+/// @dev  Uses Forge’s Script for transaction broadcasting and HelperConfig for price-feed addresses
 contract DeployChainFund is Script {
     /// @notice Deploys ChainFund and returns both the deployed contract and its configuration helper
     /// @return chainFund     The newly deployed ChainFund contract instance
