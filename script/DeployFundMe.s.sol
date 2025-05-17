@@ -5,14 +5,30 @@ import {Script} from "forge-std/Script.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 import {FundMe} from "../src/FundMe.sol";
 
+/// @title  DeployFundMe Script
+/// @notice Automates the deployment of the FundMe contract using network-specific configuration
+/// @dev    Uses Forge’s Script for transaction broadcasting and HelperConfig for price-feed addresses
 contract DeployFundMe is Script {
-    function run() external returns (FundMe, HelperConfig) {
-        HelperConfig helperConfig = new HelperConfig(); // This comes with our mocks!
+    /// @notice Deploys FundMe and returns both the deployed contract and its configuration helper
+    /// @return fundMe       The newly deployed FundMe contract instance
+    /// @return helperConfig The HelperConfig instance containing network settings
+    function run() external returns (FundMe fundMe, HelperConfig helperConfig) {
+        // 1. Instantiate HelperConfig to determine which price feed to use on this network
+        helperConfig = new HelperConfig();
+
+        // 2. Read the active price-feed address from the helper
         address priceFeed = helperConfig.activeNetworkConfig();
 
+        // 3. Begin broadcasting transactions using the private key provided to Forge
         vm.startBroadcast();
-        FundMe fundMe = new FundMe(priceFeed);
+
+        // 4. Deploy the FundMe contract, passing in the resolved price-feed address
+        fundMe = new FundMe(priceFeed);
+
+        // 5. Stop broadcasting; Forge will sign and send the transaction above
         vm.stopBroadcast();
+
+        // 6. Return the deployed FundMe instance and its config for downstream scripts/tests
         return (fundMe, helperConfig);
     }
 }
